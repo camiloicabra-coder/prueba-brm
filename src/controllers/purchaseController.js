@@ -1,7 +1,27 @@
+/**
+ * @file Controlador para la gestión de compras.
+ * @description Maneja la creación, consulta y obtención del historial de compras de los usuarios y administradores.
+ */
 
 const { Purchase, PurchaseItem, Product, User } = require('../models');
 
-//  Registrar una compra
+/**
+ * @api {post} /api/purchases Registrar una nueva compra
+ * @apiName RegistrarCompra
+ * @apiGroup Compras
+ * @apiHeader {String} Authorization Token JWT del usuario autenticado.
+ *
+ * @apiBody {Object[]} items Lista de productos comprados.
+ * @apiBody {Number} items.productId ID del producto.
+ * @apiBody {Number} items.quantity Cantidad del producto.
+ *
+ * @apiSuccess {String} mensaje Confirmación del registro.
+ * @apiSuccess {Object} factura Información de la compra generada.
+ *
+ * @apiError (Error 400) mensaje Lista de productos vacía o inválida.
+ * @apiError (Error 404) mensaje Producto no encontrado.
+ * @apiError (Error 500) mensaje Error interno al registrar la compra.
+ */
 const registrarCompra = async (req, res) => {
   const { items } = req.body;
   const userId = req.user.id;
@@ -73,7 +93,15 @@ const registrarCompra = async (req, res) => {
   }
 };
 
-// Obtener todas las compras (solo ADMIN)
+/**
+ * @api {get} /api/purchases Obtener todas las compras
+ * @apiName ObtenerCompras
+ * @apiGroup Compras
+ * @apiHeader {String} Authorization Token JWT de un usuario ADMIN.
+ *
+ * @apiSuccess {Object[]} compras Lista de todas las compras realizadas.
+ * @apiError (Error 500) mensaje Error al obtener las compras.
+ */
 const obtenerCompras = async (req, res) => {
   try {
     const compras = await Purchase.findAll({
@@ -120,7 +148,17 @@ const obtenerCompras = async (req, res) => {
   }
 };
 
-//  Obtener compras de un usuario específico (solo ADMIN)
+/**
+ * @api {get} /api/purchases/user/:userId Obtener compras de un usuario específico
+ * @apiName ObtenerComprasPorUsuario
+ * @apiGroup Compras
+ * @apiHeader {String} Authorization Token JWT de un usuario ADMIN.
+ *
+ * @apiParam {Number} userId ID del usuario.
+ * @apiSuccess {Object[]} compras Lista de compras realizadas por el usuario.
+ * @apiError (Error 404) mensaje Usuario sin compras registradas.
+ * @apiError (Error 500) mensaje Error al obtener las compras del usuario.
+ */
 const obtenerComprasPorUsuario = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -174,7 +212,17 @@ const obtenerComprasPorUsuario = async (req, res) => {
   }
 };
 
-// Obtener una compra específica (factura del cliente autenticado)
+/**
+ * @api {get} /api/purchases/:id Obtener una compra específica
+ * @apiName ObtenerCompraPorId
+ * @apiGroup Compras
+ * @apiHeader {String} Authorization Token JWT del usuario autenticado.
+ *
+ * @apiParam {Number} id ID de la compra.
+ * @apiSuccess {Object} compra Información detallada de la factura.
+ * @apiError (Error 403) mensaje Acceso denegado a la compra.
+ * @apiError (Error 404) mensaje Compra no encontrada.
+ */
 const obtenerCompraPorId = async (req, res) => {
   try {
     const { id } = req.params;
@@ -229,7 +277,15 @@ const obtenerCompraPorId = async (req, res) => {
   }
 };
 
-// Historial de compras del cliente autenticado
+/**
+ * @api {get} /api/purchases/history Historial de compras del cliente autenticado
+ * @apiName ObtenerHistorialCliente
+ * @apiGroup Compras
+ * @apiHeader {String} Authorization Token JWT del usuario autenticado.
+ *
+ * @apiSuccess {Object[]} compras Historial de compras del usuario.
+ * @apiError (Error 404) mensaje No tienes compras registradas.
+ */
 const obtenerHistorialCliente = async (req, res) => {
   try {
     const userId = req.user.id;

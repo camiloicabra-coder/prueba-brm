@@ -19,6 +19,7 @@
     "sequelize": "^6.37.7"
   },
   "devDependencies": {
+    "apidoc": "^1.2.0",
     "nodemon": "^3.1.10"
   }
 }
